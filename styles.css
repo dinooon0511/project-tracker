@@ -275,7 +275,6 @@ body {
 }
 
 /* Стили для нижнего меню */
-/* Обновленные стили для нижнего меню */
 .bottom-menu {
   position: fixed;
   bottom: 0;
@@ -294,66 +293,53 @@ body {
   justify-content: space-between;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Добавлено чтобы подложка не выходила за границы */
 }
 
 .menu-group::after {
   content: '';
   position: absolute;
-  top: 7px; /* Выравниваем с padding родителя */
-  left: 7px; /* Выравниваем с padding родителя */
-  height: calc(100% - 14px); /* Учитываем padding */
-  width: 25%;
+  margin: 0px 5px;
+  top: 4px;
+  left: 0;
+  height: 47px;
   background-color: #000000;
   border-radius: 30px;
   transition: all 0.3s ease;
-  z-index: 0;
 }
 
 .menu-group.profile-active::after {
+  width: 25%;
   transform: translateX(0);
 }
 
 .menu-group.settings-active::after {
+  width: 25%;
   transform: translateX(100%);
 }
 
 .menu-group.calories-active::after {
+  width: 25%;
   transform: translateX(200%);
 }
 
 .menu-group.tasks-active::after {
+  width: 25%;
   transform: translateX(300%);
 }
 
 .menu-button {
   flex: 1;
   padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
+  border-radius: 10px;
   background: none;
   cursor: pointer;
+  transition: color 0.3s;
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-  transition: all 0.3s ease;
-}
-
-.menu-button.active .menu-icon {
-  filter: brightness(0) invert(1); /* Делаем иконку белой */
-}
-
-/* Убираем стандартные стили текста, так как теперь только иконки */
-.menu-button {
-  color: transparent;
-  font-size: 0;
 }
 
 .menu-button.active {
@@ -368,16 +354,4 @@ body {
 
 .tab-content.active {
   display: block;
-}
-
-/* Стили для иконок меню */
-.menu-icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-  margin: 0 auto;
-}
-
-.menu-button.active .menu-icon path {
-  stroke: #ffffff;
 }
