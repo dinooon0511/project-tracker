@@ -32,6 +32,19 @@ const settingsTab = document.querySelector('.settings-tab');
 const caloriesTab = document.querySelector('.calories-tab');
 const tasksTab = document.querySelector('.tasks-tab');
 
+// Элементы для вкладки параметров
+const maleBtn = document.getElementById('maleBtn');
+const femaleBtn = document.getElementById('femaleBtn');
+const ageInput = document.getElementById('ageInput');
+const heightInput = document.getElementById('heightInput');
+const weightInput = document.getElementById('weightInput');
+const calculateBtn = document.getElementById('calculateBtn');
+const calculatedCalories = document.getElementById('calculatedCalories');
+const resultContainer = document.getElementById('resultContainer');
+const genderButtonGroup = document.querySelector('.gender-button-group');
+
+let selectedGender = null; // 'male' или 'female'
+
 // Обработчики для кнопок входа и регистрации
 loginBtn.addEventListener('click', function () {
   buttonGroup.classList.remove('register-active');
@@ -101,10 +114,11 @@ registerSubmit.addEventListener('click', function () {
     login,
     password,
     points: 0,
-    height: 175,
-    weight: 70,
-    calories: 2000,
+    height: 0,
+    weight: 0,
+    calories: 0,
     activity: 3,
+    gender: null,
   });
   localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
 
@@ -188,6 +202,66 @@ tasksTabBtn.addEventListener('click', function () {
   setActiveTab('tasks');
 });
 
+// Обработчики для кнопок выбора пола
+maleBtn.addEventListener('click', function () {
+  selectedGender = 'male';
+  maleBtn.classList.add('active');
+  femaleBtn.classList.remove('active');
+  genderButtonGroup.classList.remove('female-active');
+  genderButtonGroup.classList.add('male-active');
+});
+
+femaleBtn.addEventListener('click', function () {
+  selectedGender = 'female';
+  femaleBtn.classList.add('active');
+  maleBtn.classList.remove('active');
+  genderButtonGroup.classList.remove('male-active');
+  genderButtonGroup.classList.add('female-active');
+});
+
+// Обработчик кнопки расчета калорий
+calculateBtn.addEventListener('click', function () {
+  const age = parseInt(ageInput.value);
+  const height = parseInt(heightInput.value);
+  const weight = parseInt(weightInput.value);
+
+  if (!selectedGender || !age || !height || !weight) {
+    alert('Пожалуйста, заполните все поля и выберите пол');
+    return;
+  }
+
+  let calories;
+
+  // Расчет калорий по формуле Харриса-Бенедикта
+  if (selectedGender === 'male') {
+    calories = Math.round(66.47 + 13.75 * weight + 5.003 * height - 6.755 * age);
+  } else {
+    calories = Math.round(655.1 + 9.563 * weight + 1.85 * height - 4.676 * age);
+  }
+
+  // Показываем результат
+  calculatedCalories.textContent = calories;
+  resultContainer.classList.remove('hidden');
+
+  // Обновляем данные пользователя
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const userIndex = usersDB.findIndex((user) => user.login === currentUser);
+    if (userIndex !== -1) {
+      usersDB[userIndex].height = height;
+      usersDB[userIndex].weight = weight;
+      usersDB[userIndex].calories = calories;
+      usersDB[userIndex].gender = selectedGender;
+      localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
+
+      // Обновляем данные в профиле
+      userHeight.textContent = height;
+      userWeight.textContent = weight;
+      userCalories.textContent = calories;
+    }
+  }
+});
+
 // Функция переключения активной вкладки
 function setActiveTab(tabName) {
   // Удаляем active у всех кнопок
@@ -249,11 +323,27 @@ function showProfile(username) {
       avatarWrapper.appendChild(defaultAvatar);
     }
 
+    // Устанавливаем данные пользователя
     userPoints.textContent = user.points || 0;
-    userHeight.textContent = user.height || 175;
-    userWeight.textContent = user.weight || 70;
-    userCalories.textContent = user.calories || 2000;
+    userHeight.textContent = user.height || 0;
+    userWeight.textContent = user.weight || 0;
+    userCalories.textContent = user.calories || 0;
     userActivity.textContent = user.activity || 3;
+
+    // Восстанавливаем выбор пола если он есть
+    if (user.gender) {
+      selectedGender = user.gender;
+      if (user.gender === 'male') {
+        maleBtn.click(); // Это вызовет все нужные обработчики
+      } else {
+        femaleBtn.click();
+      }
+    }
+
+    // Заполняем поля в настройках
+    if (user.height) heightInput.value = user.height;
+    if (user.weight) weightInput.value = user.weight;
+    if (user.age) ageInput.value = user.age;
   }
 
   authContainer.classList.add('hidden');
