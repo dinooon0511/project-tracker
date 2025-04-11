@@ -108,9 +108,33 @@
       <!-- Вкладка Параметры -->
       <div class="tab-content settings-tab">
         <div class="profile-container">
-          <div class="profile-header">Параметры</div>
-          <div style="text-align: center; padding: 20px">
-            <p>Здесь будут настройки вашего профиля</p>
+          <div class="profile-header">Мои параметры</div>
+
+          <div class="gender-button-group">
+            <button class="gender-button" id="maleBtn">Мужчина</button>
+            <button class="gender-button" id="femaleBtn">Женщина</button>
+          </div>
+
+          <!-- Остальные элементы остаются без изменений -->
+          <div class="input-group">
+            <label for="ageInput">Возраст</label>
+            <input type="number" id="ageInput" placeholder="Введите ваш возраст" />
+          </div>
+
+          <div class="input-group">
+            <label for="heightInput">Рост (см)</label>
+            <input type="number" id="heightInput" placeholder="Введите ваш рост" />
+          </div>
+
+          <div class="input-group">
+            <label for="weightInput">Вес (кг)</label>
+            <input type="number" id="weightInput" placeholder="Введите ваш вес" />
+          </div>
+
+          <button class="submit-button" id="calculateBtn">Рассчитать калории</button>
+
+          <div id="resultContainer" class="hidden">
+            <p>Ваша дневная норма калорий: <span id="calculatedCalories">0</span> ккал</p>
           </div>
         </div>
       </div>
