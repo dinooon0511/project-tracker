@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Фитнес Трекер</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Контейнер для авторизации/регистрации -->
+    <div class="container" id="authContainer">
+      <div class="header">Фитнес Трекер</div>
+
+      <div classg="button-group login-active" id="buttonGroup">
+        <button class="button button-login active" id="loginBtn">Войти</button>
+        <button class="button button-register" id="registerBtn">Регистрация</button>
+      </div>
+
+      <div class="form-container" id="loginForm">
+        <div class="input-group">
+          <label for="login">Логин</label>
+          <input type="text" id="login" placeholder="Введите ваш логин" />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" placeholder="Введите ваш пароль" />
+        </div>
+
+        <button class="submit-button" id="loginSubmit">Войти</button>
+      </div>
+
+      <div class="form-container hidden" id="registerForm">
+        <div class="input-group">
+          <label for="regLogin">Логин</label>
+          <input type="text" id="regLogin" placeholder="Придумайте логин" />
+        </div>
+
+        <div class="input-group">
+          <label for="regPassword">Пароль</label>
+          <input type="password" id="regPassword" placeholder="Придумайте пароль" />
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">Повторите пароль</label>
+          <input type="password" id="confirmPassword" placeholder="Повторите пароль" />
+        </div>
+
+        <button class="submit-button" id="registerSubmit">Зарегистрироваться</button>
+      </div>
+    </div>
+
+    <!-- Контейнер для профиля (изначально скрыт) -->
+    <div class="container hidden" id="profileContainer">
+      <!-- Вкладка Профиль -->
+      <div class="tab-content profile-tab active">
+        <div class="profile-container">
+          <div class="profile-header">Ваш профиль</div>
+
+          <div class="user-profile">
+            <div class="avatar-container">
+              <div class="avatar" id="avatarWrapper">
+                <img
+                  id="userAvatar"
+                  class="default-avatar"
+                  src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"
+                  alt="Аватар"
+                />
+              </div>
+              <label class="avatar-upload">
+                <input type="file" id="avatarInput" accept="image/*" />
+                <span>+</span>
+              </label>
+            </div>
+            <div class="user-info">
+              <div class="username" id="profileUsername">Пользователь</div>
+              <div class="points">Баллы: <span id="userPoints">0</span></div>
+            </div>
+          </div>
+
+          <div class="stats-container">
+            <div class="stats-row">
+              <div class="stat-item">
+                <div class="stat-value" id="userHeight">175</div>
+                <div class="stat-label">Рост (см)</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="userWeight">70</div>
+                <div class="stat-label">Вес (кг)</div>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat-item">
+                <div class="stat-value" id="userCalories">2000</div>
+                <div class="stat-label">Калории (ккал)</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="userActivity">3</div>
+                <div class="stat-label">Активность</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="logout-btn" id="logoutBtn">Выйти</button>
+        </div>
+      </div>
+
+      <!-- Вкладка Параметры -->
+      <div class="tab-content settings-tab">
+        <div class="profile-container">
+          <div class="profile-header">Параметры</div>
+          <div style="text-align: center; padding: 20px">
+            <p>Здесь будут настройки вашего профиля</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Вкладка Калории -->
+      <div class="tab-content calories-tab">
+        <div class="profile-container">
+          <div class="profile-header">Калории</div>
+          <div style="text-align: center; padding: 20px">
+            <p>Здесь будет информация о потребляемых калориях</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Вкладка Задания -->
+      <div class="tab-content tasks-tab">
+        <div class="profile-container">
+          <div class="profile-header">Задания</div>
+          <div style="text-align: center; padding: 20px">
+            <p>Здесь будут ваши задания и достижения</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Нижнее меню (только для профиля) -->
+    <div class="bottom-menu hidden" id="bottomMenu">
+      <div class="menu-group profile-active" id="menuGroup">
+        <button class="menu-button active" id="profileTabBtn">
+          <img src="pro.svg" alt="Профиль" class="menu-icon" />
+        </button>
+        <button class="menu-button" id="settingsTabBtn">
+          <img src="par.svg" alt="Параметры" class="menu-icon" />
+        </button>
+        <button class="menu-button" id="caloriesTabBtn">
+          <img src="cal.svg" alt="Калории" class="menu-icon" />
+        </button>
+        <button class="menu-button" id="tasksTabBtn">
+          <img src="win.svg" alt="Задания" class="menu-icon" />
+        </button>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
