@@ -1,6 +1,103 @@
 // База данных пользователей (используем localStorage для сохранения между сессиями)
 let usersDB = JSON.parse(localStorage.getItem('fitnessUsers')) || [];
 
+// Подключаем библиотеку для работы с Excel
+const script = document.createElement('script');
+script.src = 'https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js';
+document.head.appendChild(script);
+
+// Переменные для работы с Excel
+let workbook = null;
+const EXCEL_FILENAME = 'fitness_users.xlsx';
+
+// Функция инициализации Excel файла
+async function initExcelFile() {
+  try {
+    // Пытаемся загрузить существующий файл
+    const response = await fetch(EXCEL_FILENAME);
+    if (response.ok) {
+      const arrayBuffer = await response.arrayBuffer();
+      workbook = XLSX.read(arrayBuffer);
+    } else {
+      // Если файла нет, создаем новый
+      createNewExcelFile();
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке файла:', error);
+    createNewExcelFile();
+  }
+}
+
+// Функция создания нового Excel файла
+function createNewExcelFile() {
+  workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    ['Логин', 'Пароль', 'Рост', 'Вес', 'Норма калорий', 'Баллы'],
+  ]);
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Пользователи');
+  saveExcelFile();
+}
+
+// Функция сохранения Excel файла
+function saveExcelFile() {
+  XLSX.writeFile(workbook, EXCEL_FILENAME);
+}
+
+// Функция добавления нового пользователя в Excel
+async function addUserToExcel(login, password) {
+  await initExcelFile();
+
+  const worksheet = workbook.Sheets['Пользователи'];
+  const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+  // Проверяем, есть ли уже такой пользователь
+  const userExists = jsonData.some((row) => row['Логин'] === login);
+
+  if (!userExists) {
+    // Добавляем новую строку
+    jsonData.push({
+      Логин: login,
+      Пароль: password,
+      Рост: '',
+      Вес: '',
+      'Норма калорий': '',
+      Баллы: 0,
+    });
+
+    // Обновляем worksheet
+    const newWorksheet = XLSX.utils.json_to_sheet(jsonData);
+    workbook.Sheets['Пользователи'] = newWorksheet;
+    saveExcelFile();
+  }
+}
+
+// Функция обновления данных пользователя в Excel
+async function updateUserInExcel(login, data) {
+  await initExcelFile();
+
+  const worksheet = workbook.Sheets['Пользователи'];
+  const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+  // Находим пользователя
+  const userIndex = jsonData.findIndex((row) => row['Логин'] === login);
+
+  if (userIndex !== -1) {
+    // Обновляем данные
+    jsonData[userIndex] = {
+      ...jsonData[userIndex],
+      Рост: data.height || '',
+      Вес: data.weight || '',
+      'Норма калорий': data.calories || '',
+      Баллы: data.points || 0,
+    };
+
+    // Обновляем worksheet
+    const newWorksheet = XLSX.utils.json_to_sheet(jsonData);
+    workbook.Sheets['Пользователи'] = newWorksheet;
+    saveExcelFile();
+  }
+}
+
 // Получаем все необходимые элементы DOM
 const loginBtn = document.getElementById('loginBtn');
 const registerBtn = document.getElementById('registerBtn');
@@ -31,6 +128,19 @@ const profileTab = document.querySelector('.profile-tab');
 const settingsTab = document.querySelector('.settings-tab');
 const caloriesTab = document.querySelector('.calories-tab');
 const tasksTab = document.querySelector('.tasks-tab');
+
+// Элементы для вкладки параметров
+const maleBtn = document.getElementById('maleBtn');
+const femaleBtn = document.getElementById('femaleBtn');
+const ageInput = document.getElementById('ageInput');
+const heightInput = document.getElementById('heightInput');
+const weightInput = document.getElementById('weightInput');
+const calculateBtn = document.getElementById('calculateBtn');
+const calculatedCalories = document.getElementById('calculatedCalories');
+const resultContainer = document.getElementById('resultContainer');
+const genderButtonGroup = document.querySelector('.gender-button-group');
+
+let selectedGender = null; // 'male' или 'female'
 
 // Обработчики для кнопок входа и регистрации
 loginBtn.addEventListener('click', function () {
@@ -74,7 +184,7 @@ loginSubmit.addEventListener('click', function () {
 });
 
 // Обработчик формы регистрации
-registerSubmit.addEventListener('click', function () {
+registerSubmit.addEventListener('click', async function () {
   const login = document.getElementById('regLogin').value.trim();
   const password = document.getElementById('regPassword').value.trim();
   const confirmPassword = document.getElementById('confirmPassword').value.trim();
@@ -97,16 +207,22 @@ registerSubmit.addEventListener('click', function () {
   }
 
   // Добавляем нового пользователя
-  usersDB.push({
+  const newUser = {
     login,
     password,
     points: 0,
-    height: 175,
-    weight: 70,
-    calories: 2000,
+    height: 0,
+    weight: 0,
+    calories: 0,
     activity: 3,
-  });
+    gender: null,
+  };
+
+  usersDB.push(newUser);
   localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
+
+  // Добавляем пользователя в Excel
+  await addUserToExcel(login, password);
 
   alert('Регистрация успешна! Теперь вы можете войти');
 
@@ -137,7 +253,6 @@ avatarInput.addEventListener('change', function (e) {
   if (file) {
     const reader = new FileReader();
     reader.onload = function (event) {
-      // Создаем новый элемент img для загруженной аватарки
       const newAvatar = document.createElement('img');
       newAvatar.src = event.target.result;
       newAvatar.style.width = '100%';
@@ -145,11 +260,9 @@ avatarInput.addEventListener('change', function (e) {
       newAvatar.style.objectFit = 'cover';
       newAvatar.style.borderRadius = '50%';
 
-      // Очищаем контейнер и добавляем новую аватарку
       avatarWrapper.innerHTML = '';
       avatarWrapper.appendChild(newAvatar);
 
-      // Обновляем аватар в базе данных
       const currentUser = localStorage.getItem('currentUser');
       if (currentUser) {
         const userIndex = usersDB.findIndex((user) => user.login === currentUser);
@@ -188,19 +301,84 @@ tasksTabBtn.addEventListener('click', function () {
   setActiveTab('tasks');
 });
 
+// Обработчики для кнопок выбора пола
+maleBtn.addEventListener('click', function () {
+  selectedGender = 'male';
+  maleBtn.classList.add('active');
+  femaleBtn.classList.remove('active');
+  genderButtonGroup.classList.remove('female-active');
+  genderButtonGroup.classList.add('male-active');
+});
+
+femaleBtn.addEventListener('click', function () {
+  selectedGender = 'female';
+  femaleBtn.classList.add('active');
+  maleBtn.classList.remove('active');
+  genderButtonGroup.classList.remove('male-active');
+  genderButtonGroup.classList.add('female-active');
+});
+
+// Обработчик кнопки расчета калорий
+calculateBtn.addEventListener('click', async function () {
+  const age = parseInt(ageInput.value);
+  const height = parseInt(heightInput.value);
+  const weight = parseInt(weightInput.value);
+
+  if (!selectedGender || !age || !height || !weight) {
+    alert('Пожалуйста, заполните все поля и выберите пол');
+    return;
+  }
+
+  let calories;
+
+  // Расчет калорий по формуле Харриса-Бенедикта
+  if (selectedGender === 'male') {
+    calories = Math.round(66.47 + 13.75 * weight + 5.003 * height - 6.755 * age);
+  } else {
+    calories = Math.round(655.1 + 9.563 * weight + 1.85 * height - 4.676 * age);
+  }
+
+  // Показываем результат
+  calculatedCalories.textContent = calories;
+  resultContainer.classList.remove('hidden');
+
+  // Обновляем данные пользователя
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const userIndex = usersDB.findIndex((user) => user.login === currentUser);
+    if (userIndex !== -1) {
+      usersDB[userIndex].height = height;
+      usersDB[userIndex].weight = weight;
+      usersDB[userIndex].calories = calories;
+      usersDB[userIndex].gender = selectedGender;
+      localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
+
+      // Обновляем данные в профиле
+      userHeight.textContent = height;
+      userWeight.textContent = weight;
+      userCalories.textContent = calories;
+
+      // Обновляем данные в Excel
+      await updateUserInExcel(currentUser, {
+        height: height,
+        weight: weight,
+        calories: calories,
+        points: usersDB[userIndex].points,
+      });
+    }
+  }
+});
+
 // Функция переключения активной вкладки
 function setActiveTab(tabName) {
-  // Удаляем active у всех кнопок
   document.querySelectorAll('.menu-button').forEach((btn) => {
     btn.classList.remove('active');
   });
 
-  // Скрываем все вкладки
   document.querySelectorAll('.tab-content').forEach((tab) => {
     tab.classList.remove('active');
   });
 
-  // Активируем выбранную вкладку
   switch (tabName) {
     case 'profile':
       profileTabBtn.classList.add('active');
@@ -225,14 +403,11 @@ function setActiveTab(tabName) {
 function showProfile(username) {
   profileUsername.textContent = username;
 
-  // Загружаем данные пользователя
   const user = usersDB.find((user) => user.login === username);
   if (user) {
-    // Очищаем контейнер аватара
     avatarWrapper.innerHTML = '';
 
     if (user.avatar) {
-      // Если есть загруженная аватарка, отображаем ее
       const avatarImg = document.createElement('img');
       avatarImg.src = user.avatar;
       avatarImg.style.width = '100%';
@@ -241,7 +416,6 @@ function showProfile(username) {
       avatarImg.style.borderRadius = '50%';
       avatarWrapper.appendChild(avatarImg);
     } else {
-      // Если нет аватарки, отображаем стандартную иконку
       const defaultAvatar = document.createElement('img');
       defaultAvatar.className = 'default-avatar';
       defaultAvatar.src =
@@ -250,25 +424,38 @@ function showProfile(username) {
     }
 
     userPoints.textContent = user.points || 0;
-    userHeight.textContent = user.height || 175;
-    userWeight.textContent = user.weight || 70;
-    userCalories.textContent = user.calories || 2000;
+    userHeight.textContent = user.height || 0;
+    userWeight.textContent = user.weight || 0;
+    userCalories.textContent = user.calories || 0;
     userActivity.textContent = user.activity || 3;
+
+    // Восстанавливаем выбор пола если он есть
+    if (user.gender) {
+      selectedGender = user.gender;
+      if (user.gender === 'male') {
+        maleBtn.click();
+      } else {
+        femaleBtn.click();
+      }
+    }
+
+    // Заполняем поля в настройках
+    if (user.height) heightInput.value = user.height;
+    if (user.weight) weightInput.value = user.weight;
+    if (user.age) ageInput.value = user.age;
   }
 
   authContainer.classList.add('hidden');
   profileContainer.classList.remove('hidden');
   bottomMenu.classList.remove('hidden');
-
-  // Активируем вкладку профиля
   setActiveTab('profile');
-
-  // Сохраняем текущего пользователя
   localStorage.setItem('currentUser', username);
 }
 
-// Проверяем авторизацию при загрузке страницы
+// Инициализация при загрузке страницы
 window.addEventListener('DOMContentLoaded', function () {
+  initExcelFile();
+
   const currentUser = localStorage.getItem('currentUser');
   if (currentUser) {
     showProfile(currentUser);

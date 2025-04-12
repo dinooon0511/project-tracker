@@ -367,3 +367,79 @@ body {
 .tab-content.active {
   display: block;
 }
+
+/* Стили для выбора пола */
+.gender-selector {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: relative;
+  background-color: #fff;
+  border-radius: 30px;
+  padding: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для выбора пола с подложкой */
+.gender-button-group {
+  border: 0px solid black;
+  padding: 7px;
+  background-color: #fff;
+  border-radius: 30px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.gender-button-group::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  height: calc(100% - 14px);
+  width: 47.8%;
+  background-color: #000000;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  z-index: 0;
+}
+
+.gender-button-group.male-active::after {
+  transform: translateX(0);
+}
+
+.gender-button-group.female-active::after {
+  transform: translateX(100%);
+}
+
+.gender-button {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.gender-button.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+#resultContainer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+#resultContainer span {
+  font-weight: bold;
+}
