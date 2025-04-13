@@ -1,102 +1,8 @@
-// База данных пользователей (используем localStorage для сохранения между сессиями)
 let usersDB = JSON.parse(localStorage.getItem('fitnessUsers')) || [];
 
 // Подключаем библиотеку для работы с Excel
 const script = document.createElement('script');
-script.src = 'https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js';
 document.head.appendChild(script);
-
-// Переменные для работы с Excel
-let workbook = null;
-const EXCEL_FILENAME = 'fitness_users.xlsx';
-
-// Функция инициализации Excel файла
-async function initExcelFile() {
-  try {
-    // Пытаемся загрузить существующий файл
-    const response = await fetch(EXCEL_FILENAME);
-    if (response.ok) {
-      const arrayBuffer = await response.arrayBuffer();
-      workbook = XLSX.read(arrayBuffer);
-    } else {
-      // Если файла нет, создаем новый
-      createNewExcelFile();
-    }
-  } catch (error) {
-    console.error('Ошибка при загрузке файла:', error);
-    createNewExcelFile();
-  }
-}
-
-// Функция создания нового Excel файла
-function createNewExcelFile() {
-  workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.aoa_to_sheet([
-    ['Логин', 'Пароль', 'Рост', 'Вес', 'Норма калорий', 'Баллы'],
-  ]);
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Пользователи');
-  saveExcelFile();
-}
-
-// Функция сохранения Excel файла
-function saveExcelFile() {
-  XLSX.writeFile(workbook, EXCEL_FILENAME);
-}
-
-// Функция добавления нового пользователя в Excel
-async function addUserToExcel(login, password) {
-  await initExcelFile();
-
-  const worksheet = workbook.Sheets['Пользователи'];
-  const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-  // Проверяем, есть ли уже такой пользователь
-  const userExists = jsonData.some((row) => row['Логин'] === login);
-
-  if (!userExists) {
-    // Добавляем новую строку
-    jsonData.push({
-      Логин: login,
-      Пароль: password,
-      Рост: '',
-      Вес: '',
-      'Норма калорий': '',
-      Баллы: 0,
-    });
-
-    // Обновляем worksheet
-    const newWorksheet = XLSX.utils.json_to_sheet(jsonData);
-    workbook.Sheets['Пользователи'] = newWorksheet;
-    saveExcelFile();
-  }
-}
-
-// Функция обновления данных пользователя в Excel
-async function updateUserInExcel(login, data) {
-  await initExcelFile();
-
-  const worksheet = workbook.Sheets['Пользователи'];
-  const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-  // Находим пользователя
-  const userIndex = jsonData.findIndex((row) => row['Логин'] === login);
-
-  if (userIndex !== -1) {
-    // Обновляем данные
-    jsonData[userIndex] = {
-      ...jsonData[userIndex],
-      Рост: data.height || '',
-      Вес: data.weight || '',
-      'Норма калорий': data.calories || '',
-      Баллы: data.points || 0,
-    };
-
-    // Обновляем worksheet
-    const newWorksheet = XLSX.utils.json_to_sheet(jsonData);
-    workbook.Sheets['Пользователи'] = newWorksheet;
-    saveExcelFile();
-  }
-}
 
 // Получаем все необходимые элементы DOM
 const loginBtn = document.getElementById('loginBtn');
@@ -141,6 +47,24 @@ const resultContainer = document.getElementById('resultContainer');
 const genderButtonGroup = document.querySelector('.gender-button-group');
 
 let selectedGender = null; // 'male' или 'female'
+
+const monthSelect = document.getElementById('monthSelect');
+const yearSelect = document.getElementById('yearSelect');
+const daysContainer = document.getElementById('daysContainer');
+const prevDayBtn = document.querySelector('.prev-day');
+const nextDayBtn = document.querySelector('.next-day');
+const addMealBtns = document.querySelectorAll('.add-meal-btn');
+const saveMealBtns = document.querySelectorAll('.save-meal-btn');
+const saveDayBtn = document.getElementById('saveDayBtn');
+const toggleDayViewBtn = document.getElementById('toggleDayViewBtn');
+const fullDayView = document.querySelector('.full-day-view');
+const fullDayMeals = document.getElementById('fullDayMeals');
+const totalCaloriesSpan = document.getElementById('totalCalories');
+
+let currentDate = new Date();
+let selectedDate = new Date();
+let mealsData = {};
+let currentDayOffset = 0;
 
 // Обработчики для кнопок входа и регистрации
 loginBtn.addEventListener('click', function () {
@@ -220,9 +144,6 @@ registerSubmit.addEventListener('click', async function () {
 
   usersDB.push(newUser);
   localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
-
-  // Добавляем пользователя в Excel
-  await addUserToExcel(login, password);
 
   alert('Регистрация успешна! Теперь вы можете войти');
 
@@ -357,14 +278,6 @@ calculateBtn.addEventListener('click', async function () {
       userHeight.textContent = height;
       userWeight.textContent = weight;
       userCalories.textContent = calories;
-
-      // Обновляем данные в Excel
-      await updateUserInExcel(currentUser, {
-        height: height,
-        weight: weight,
-        calories: calories,
-        points: usersDB[userIndex].points,
-      });
     }
   }
 });
@@ -454,10 +367,608 @@ function showProfile(username) {
 
 // Инициализация при загрузке страницы
 window.addEventListener('DOMContentLoaded', function () {
-  initExcelFile();
-
   const currentUser = localStorage.getItem('currentUser');
   if (currentUser) {
     showProfile(currentUser);
+    initCaloriesTab();
   }
+});
+
+// Инициализация выбора года
+function initYearSelect() {
+  const currentYear = new Date().getFullYear();
+  for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    if (year === currentYear) {
+      option.selected = true;
+    }
+    yearSelect.appendChild(option);
+  }
+}
+
+// Обновление отображения дней месяца
+function updateDaysDisplay() {
+  daysContainer.innerHTML = '';
+
+  const year = parseInt(yearSelect.value);
+  const month = parseInt(monthSelect.value);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Определяем диапазон дней для отображения (5 дней)
+  const startDay = Math.max(1, Math.min(selectedDate.getDate() - 2, daysInMonth - 4));
+  const endDay = Math.min(startDay + 4, daysInMonth);
+
+  for (let day = startDay; day <= endDay; day++) {
+    const dayElement = document.createElement('div');
+    dayElement.classList.add('day-item');
+    dayElement.textContent = day;
+
+    if (
+      day === selectedDate.getDate() &&
+      month === selectedDate.getMonth() &&
+      year === selectedDate.getFullYear()
+    ) {
+      dayElement.classList.add('active');
+    }
+
+    dayElement.addEventListener('click', () => {
+      selectedDate = new Date(year, month, day);
+      loadDayData(selectedDate);
+      updateDaysDisplay();
+    });
+
+    daysContainer.appendChild(dayElement);
+  }
+}
+
+// Загрузка данных за выбранный день
+function loadDayData(date) {
+  const dateKey = formatDateKey(date);
+
+  // Проверяем, есть ли данные для этой даты
+  if (mealsData[dateKey]) {
+    // Заполняем данные из сохраненных
+    const dayData = mealsData[dateKey];
+
+    // Обновляем отображение для каждого приема пищи
+    ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
+      const mealItemsContainer = document.querySelector(`.meal-items[data-meal="${mealType}"]`);
+      mealItemsContainer.innerHTML = '';
+
+      if (dayData[mealType] && dayData[mealType].length > 0) {
+        dayData[mealType].forEach((meal, index) => {
+          const mealItem = createMealItemElement(meal, mealType, index);
+          mealItemsContainer.appendChild(mealItem);
+        });
+      }
+    });
+
+    updateFullDayView();
+    updateCaloriesProgress();
+  } else {
+    // Очищаем все приемы пищи, если данных нет
+    document.querySelectorAll('.meal-items').forEach((container) => {
+      container.innerHTML = '';
+    });
+    fullDayMeals.innerHTML = '';
+    totalCaloriesSpan.textContent = '0';
+  }
+}
+
+// Форматирование ключа даты
+function formatDateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
+}
+
+// Создание элемента приема пищи
+function createMealItemElement(meal, mealType, index) {
+  const mealItem = document.createElement('div');
+  mealItem.classList.add('meal-item');
+
+  const mealInfo = document.createElement('div');
+  mealInfo.classList.add('meal-item-info');
+
+  const nameElement = document.createElement('div');
+  nameElement.classList.add('meal-item-name');
+  nameElement.textContent = meal.name;
+
+  const caloriesElement = document.createElement('div');
+  caloriesElement.classList.add('meal-item-calories');
+  caloriesElement.textContent = `${meal.calories} ккал`;
+
+  mealInfo.appendChild(nameElement);
+  mealInfo.appendChild(caloriesElement);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('delete-meal-btn');
+  deleteBtn.innerHTML = '&times;';
+  deleteBtn.addEventListener('click', () => {
+    deleteMeal(mealType, index);
+  });
+
+  mealItem.appendChild(mealInfo);
+  mealItem.appendChild(deleteBtn);
+
+  return mealItem;
+}
+
+// Удаление приема пищи
+function deleteMeal(mealType, index) {
+  const dateKey = formatDateKey(selectedDate);
+
+  if (mealsData[dateKey] && mealsData[dateKey][mealType]) {
+    mealsData[dateKey][mealType].splice(index, 1);
+    handleMealChange();
+    updateCaloriesProgress();
+    loadDayData(selectedDate);
+  }
+}
+// Добавление нового приема пищи
+function addMeal(mealType, name, calories, protein, fat, carbs) {
+  const dateKey = formatDateKey(selectedDate);
+
+  if (!mealsData[dateKey]) {
+    mealsData[dateKey] = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+    };
+  }
+
+  mealsData[dateKey][mealType].push({
+    name,
+    calories: parseFloat(calories) || 0,
+    protein: parseFloat(protein) || 0,
+    fat: parseFloat(fat) || 0,
+    carbs: parseFloat(carbs) || 0,
+  });
+
+  handleMealChange();
+  updateCaloriesProgress();
+  loadDayData(selectedDate);
+}
+
+// Сохранение данных о приемах пищи
+function saveMealsData() {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const userIndex = usersDB.findIndex((user) => user.login === currentUser);
+    if (userIndex !== -1) {
+      usersDB[userIndex].mealsData = mealsData;
+      localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
+    }
+  }
+}
+
+// Загрузка данных о приемах пищи
+function loadMealsData() {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const user = usersDB.find((user) => user.login === currentUser);
+    if (user && user.mealsData) {
+      mealsData = user.mealsData;
+    }
+  }
+}
+
+// Обновление полного просмотра дня
+function updateFullDayView() {
+  fullDayMeals.innerHTML = '';
+  let totalCalories = 0;
+  const dateKey = formatDateKey(selectedDate);
+
+  if (mealsData[dateKey]) {
+    ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
+      if (mealsData[dateKey][mealType] && mealsData[dateKey][mealType].length > 0) {
+        const mealTypeHeader = document.createElement('h5');
+        mealTypeHeader.textContent = getMealTypeName(mealType);
+        fullDayMeals.appendChild(mealTypeHeader);
+
+        mealsData[dateKey][mealType].forEach((meal, index) => {
+          const mealItem = createMealItemElement(meal, mealType, index);
+          fullDayMeals.appendChild(mealItem);
+          totalCalories += meal.calories;
+        });
+      }
+    });
+  }
+
+  totalCaloriesSpan.textContent = totalCalories;
+}
+
+// Получение названия приема пищи
+function getMealTypeName(mealType) {
+  switch (mealType) {
+    case 'breakfast':
+      return 'Завтрак';
+    case 'lunch':
+      return 'Обед';
+    case 'dinner':
+      return 'Ужин';
+    case 'snack':
+      return 'Перекус';
+    default:
+      return '';
+  }
+}
+
+// Инициализация вкладки Калории
+function initCaloriesTab() {
+  initYearSelect();
+  updateCaloriesProgress();
+  updateCaloriesProgress();
+
+  // Устанавливаем текущую дату
+  monthSelect.value = currentDate.getMonth();
+  yearSelect.value = currentDate.getFullYear();
+  selectedDate = new Date(currentDate);
+
+  // Загружаем данные
+  loadMealsData();
+  loadDayData(selectedDate);
+  updateDaysDisplay();
+
+  // Обработчики событий
+  monthSelect.addEventListener('change', () => {
+    selectedDate = new Date(parseInt(yearSelect.value), parseInt(monthSelect.value), 1);
+    updateDaysDisplay();
+  });
+
+  yearSelect.addEventListener('change', () => {
+    selectedDate = new Date(parseInt(yearSelect.value), parseInt(monthSelect.value), 1);
+    updateDaysDisplay();
+  });
+
+  prevDayBtn.addEventListener('click', () => {
+    selectedDate.setDate(selectedDate.getDate() - 1);
+    loadDayData(selectedDate);
+    updateDaysDisplay();
+  });
+
+  nextDayBtn.addEventListener('click', () => {
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    loadDayData(selectedDate);
+    updateDaysDisplay();
+  });
+
+  addMealBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const mealType = e.target.getAttribute('data-meal');
+      document
+        .querySelector(`.meal-input-container[data-meal="${mealType}"]`)
+        .classList.toggle('hidden');
+    });
+  });
+
+  saveMealBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const mealType = e.target.getAttribute('data-meal');
+      const container = document.querySelector(`.meal-input-container[data-meal="${mealType}"]`);
+      const nameInput = container.querySelector('.meal-name-input');
+      const caloriesInput = container.querySelector('.meal-calories-input');
+
+      if (nameInput.value && caloriesInput.value) {
+        addMeal(mealType, nameInput.value, caloriesInput.value);
+
+        // Очищаем поля
+        nameInput.value = '';
+        caloriesInput.value = '';
+
+        // Скрываем контейнер
+        container.classList.add('hidden');
+
+        // Обновляем отображение
+        loadDayData(selectedDate);
+      }
+    });
+  });
+
+  saveDayBtn.addEventListener('click', () => {
+    saveMealsData();
+    alert('Данные за день сохранены!');
+  });
+
+  toggleDayViewBtn.addEventListener('click', () => {
+    fullDayView.classList.toggle('hidden');
+    toggleDayViewBtn.textContent = fullDayView.classList.contains('hidden')
+      ? 'Открыть весь день'
+      : 'Скрыть весь день';
+    updateFullDayView();
+  });
+}
+
+// Вызываем инициализацию при загрузке страницы
+window.addEventListener('DOMContentLoaded', function () {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    showProfile(currentUser);
+    initCaloriesTab();
+  }
+
+  // Инициализируем вкладку Калории при переключении на нее
+  caloriesTabBtn.addEventListener('click', initCaloriesTab);
+});
+
+// Функция для создания модального окна поиска продуктов
+function createFoodModal(mealType) {
+  const modal = document.createElement('div');
+  modal.className = 'food-modal';
+
+  modal.innerHTML = `
+    <div class="food-modal-content">
+      <div class="food-modal-header">
+        <h3 class="food-modal-title">Выберите продукт для ${getMealTypeName(mealType)}</h3>
+        <button class="close-food-modal">&times;</button>
+      </div>
+      <div class="food-search-container">
+        <input type="text" class="food-search-input" placeholder="Начните вводить название">
+        <button class="food-search-button">Поиск</button>
+      </div>
+      <div class="food-search-results"></div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const searchInput = modal.querySelector('.food-search-input');
+  const searchButton = modal.querySelector('.food-search-button');
+  const resultsContainer = modal.querySelector('.food-search-results');
+  const closeButton = modal.querySelector('.close-food-modal');
+
+  closeButton.addEventListener('click', () => {
+    modal.remove();
+  });
+
+  const performSearch = () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    const results = window.foodDB.searchFoodItems(query);
+    resultsContainer.innerHTML = '';
+
+    if (results.length === 0) {
+      resultsContainer.innerHTML = '<p>Ничего не найдено</p>';
+      return;
+    }
+
+    results.forEach((item) => {
+      const foodItem = document.createElement('div');
+      foodItem.className = 'food-item';
+      foodItem.dataset.id = item.id;
+
+      foodItem.innerHTML = `
+        <div class="food-item-info">
+          <div class="food-item-name">${item.name}</div>
+        </div>
+        <button class="select-food-button">Выбрать</button>
+      `;
+
+      foodItem.querySelector('.select-food-button').addEventListener('click', () => {
+        modal.remove();
+        createProductPage(mealType, item.id);
+      });
+
+      resultsContainer.appendChild(foodItem);
+    });
+  };
+
+  searchButton.addEventListener('click', performSearch);
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+
+  searchInput.focus();
+}
+
+// Обновленная функция создания элемента приема пищи
+function createMealItemElement(meal, mealType, index) {
+  const mealItem = document.createElement('div');
+  mealItem.classList.add('meal-item');
+
+  const mealInfo = document.createElement('div');
+  mealInfo.classList.add('meal-item-info');
+
+  const nameElement = document.createElement('div');
+  nameElement.classList.add('meal-item-name');
+  nameElement.textContent = meal.name;
+
+  const detailsElement = document.createElement('div');
+  detailsElement.classList.add('meal-item-details');
+
+  const caloriesElement = document.createElement('span');
+  caloriesElement.classList.add('meal-item-calories');
+  caloriesElement.textContent = `${meal.calories} ккал`;
+
+  const macrosElement = document.createElement('span');
+  macrosElement.classList.add('meal-item-macros');
+  macrosElement.textContent = `Б: ${meal.protein || 0}г, Ж: ${meal.fat || 0}г, У: ${
+    meal.carbs || 0
+  }г`;
+
+  detailsElement.appendChild(caloriesElement);
+  detailsElement.appendChild(document.createTextNode(' '));
+  detailsElement.appendChild(macrosElement);
+
+  mealInfo.appendChild(nameElement);
+  mealInfo.appendChild(detailsElement);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('delete-meal-btn');
+  deleteBtn.innerHTML = '&times;';
+  deleteBtn.addEventListener('click', () => {
+    deleteMeal(mealType, index);
+  });
+
+  mealItem.appendChild(mealInfo);
+  mealItem.appendChild(deleteBtn);
+
+  return mealItem;
+}
+
+function handleMealChange() {
+  updateCaloriesProgress();
+  saveMealsData();
+}
+
+// Обновляем обработчики кнопок добавления еды
+addMealBtns.forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    const mealType = e.target.getAttribute('data-meal');
+    createFoodModal(mealType);
+    updateCaloriesProgress();
+  });
+});
+
+// Новая функция для создания страницы продукта
+function createProductPage(mealType, productId) {
+  const product = window.foodDB.getFoodById(productId);
+  if (!product) return;
+
+  const [proteinPer100, fatPer100, carbsPer100] = product.bgu.split(',').map(Number);
+  const kcalPer100 = Number(product.kcal);
+
+  const modal = document.createElement('div');
+  modal.className = 'product-modal';
+
+  modal.innerHTML = `
+    <div class="product-modal-content">
+      <div class="product-modal-header">
+        <h3>${product.name}</h3>
+        <button class="close-product-modal">&times;</button>
+      </div>
+      
+      <div class="product-info">
+        <div class="product-macros">
+          <div>Калории: <span id="productKcal">${kcalPer100}</span> ккал</div>
+          <div>Белки: <span id="productProtein">${proteinPer100}</span> г</div>
+          <div>Жиры: <span id="productFat">${fatPer100}</span> г</div>
+          <div>Углеводы: <span id="productCarbs">${carbsPer100}</span> г</div>
+          <small>На 100 грамм продукта</small>
+        </div>
+        
+        <div class="product-calculator">
+          <label>Введите количество (грамм):</label>
+          <input type="number" id="productWeight" value="100" min="1" class="weight-input">
+        </div>
+        
+        <button id="addProductToMeal" data-meal="${mealType}">Добавить в ${getMealTypeName(
+    mealType,
+  )}</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Обработчики событий
+  modal.querySelector('.close-product-modal').addEventListener('click', () => {
+    modal.remove();
+  });
+
+  const weightInput = modal.querySelector('#productWeight');
+  const addBtn = modal.querySelector('#addProductToMeal');
+
+  // Функция для обновления значений
+  const updateValues = () => {
+    const weight = parseInt(weightInput.value) || 100;
+    const factor = weight / 100;
+
+    document.getElementById('productKcal').textContent = (kcalPer100 * factor).toFixed(1);
+    document.getElementById('productProtein').textContent = (proteinPer100 * factor).toFixed(1);
+    document.getElementById('productFat').textContent = (fatPer100 * factor).toFixed(1);
+    document.getElementById('productCarbs').textContent = (carbsPer100 * factor).toFixed(1);
+  };
+
+  // Пересчет при изменении веса
+  weightInput.addEventListener('input', updateValues);
+
+  // Добавление продукта
+  addBtn.addEventListener('click', () => {
+    const weight = parseInt(weightInput.value) || 100;
+    const factor = weight / 100;
+
+    addMeal(
+      mealType,
+      `${product.name} (${weight}г)`,
+      (kcalPer100 * factor).toFixed(1),
+      (proteinPer100 * factor).toFixed(1),
+      (fatPer100 * factor).toFixed(1),
+      (carbsPer100 * factor).toFixed(1),
+    );
+
+    modal.remove();
+    loadDayData(selectedDate);
+  });
+
+  // Первоначальный расчет
+  updateValues();
+}
+
+function updateCaloriesProgress() {
+  const dateKey = formatDateKey(selectedDate);
+  let totalCalories = 0;
+
+  if (mealsData[dateKey]) {
+    ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
+      if (mealsData[dateKey][mealType]) {
+        mealsData[dateKey][mealType].forEach((meal) => {
+          totalCalories += parseFloat(meal.calories) || 0;
+        });
+      }
+    });
+  }
+
+  // Получаем норму калорий из профиля
+  const currentUser = localStorage.getItem('currentUser');
+  let maxCalories = 2000; // Значение по умолчанию
+
+  if (currentUser) {
+    const user = usersDB.find((user) => user.login === currentUser);
+    if (user && user.calories) {
+      maxCalories = parseInt(user.calories) || 2000;
+    }
+  }
+
+  const progress = Math.min((totalCalories / maxCalories) * 100, 100);
+  const circumference = 2 * Math.PI * 45; // 2πr, где r=45 (радиус круга)
+  const offset = circumference - (progress / 100) * circumference;
+
+  const circleFill = document.querySelector('.calories-progress-circle-fill');
+  const progressText = document.querySelector('.calories-progress-text');
+
+  if (circleFill && progressText) {
+    // Удаляем предыдущие transition, чтобы избежать конфликтов
+    circleFill.style.transition = 'none';
+
+    // Устанавливаем цвет в зависимости от прогресса
+    if (progress < 50) {
+      circleFill.style.stroke = '#ff3b30'; // Красный
+    } else if (progress < 99) {
+      circleFill.style.stroke = '#ff9500'; // Оранжевый
+    } else {
+      circleFill.style.stroke = '#34c759'; // Зеленый
+    }
+
+    // Принудительно перерисовываем элемент
+    circleFill.getBoundingClientRect();
+
+    // Теперь применяем анимацию
+    circleFill.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+    circleFill.setAttribute('stroke-dasharray', circumference);
+    circleFill.setAttribute('stroke-dashoffset', offset);
+
+    // Обновляем текст
+    progressText.innerHTML = `${Math.round(totalCalories)}<small>из ${maxCalories}</small>`;
+  }
+}
+
+// В функции saveDayBtn.addEventListener добавьте вызов обновления шкалы:
+saveDayBtn.addEventListener('click', () => {
+  saveMealsData();
+  alert('Данные за день сохранены!');
 });

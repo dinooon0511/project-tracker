@@ -142,13 +142,81 @@
       <!-- Вкладка Калории -->
       <div class="tab-content calories-tab">
         <div class="profile-container">
-          <div class="profile-header">Калории</div>
-          <div style="text-align: center; padding: 20px">
-            <p>Здесь будет информация о потребляемых калориях</p>
+          <div class="calories-header">
+            <div class="date-picker">
+              <div class="month-year-selector">
+                <select id="monthSelect" class="month-select">
+                  <option value="0">Январь</option>
+                  <option value="1">Февраль</option>
+                  <option value="2">Март</option>
+                  <option value="3">Апрель</option>
+                  <option value="4">Май</option>
+                  <option value="5">Июнь</option>
+                  <option value="6">Июль</option>
+                  <option value="7">Август</option>
+                  <option value="8">Сентябрь</option>
+                  <option value="9">Октябрь</option>
+                  <option value="10">Ноябрь</option>
+                  <option value="11">Декабрь</option>
+                </select>
+                <select id="yearSelect" class="year-select"></select>
+              </div>
+            </div>
+            <div class="days-slider">
+              <button class="slider-arrow prev-day">&lt;</button>
+              <div class="days-container" id="daysContainer"></div>
+              <button class="slider-arrow next-day">&gt;</button>
+            </div>
+          </div>
+
+          <div class="calories-progress">
+            <svg class="calories-progress-circle" viewBox="0 0 100 100">
+              <circle class="calories-progress-circle-bg" cx="50" cy="50" r="45" />
+              <circle class="calories-progress-circle-fill" cx="50" cy="50" r="45" />
+            </svg>
+            <div class="calories-progress-text">0<small>из 0</small></div>
+          </div>
+
+          <div class="meal-section">
+            <div class="meal-header">
+              <h3>Завтрак</h3>
+              <button class="add-meal-btn" data-meal="breakfast">+</button>
+            </div>
+            <div class="meal-items" data-meal="breakfast"></div>
+          </div>
+
+          <div class="meal-section">
+            <div class="meal-header">
+              <h3>Обед</h3>
+              <button class="add-meal-btn" data-meal="lunch">+</button>
+            </div>
+            <div class="meal-items" data-meal="lunch"></div>
+          </div>
+
+          <div class="meal-section">
+            <div class="meal-header">
+              <h3>Ужин</h3>
+              <button class="add-meal-btn" data-meal="dinner">+</button>
+            </div>
+            <div class="meal-items" data-meal="dinner"></div>
+          </div>
+
+          <div class="meal-section">
+            <div class="meal-header">
+              <h3>Перекус</h3>
+              <button class="add-meal-btn" data-meal="snack">+</button>
+            </div>
+            <div class="meal-items" data-meal="snack"></div>
+          </div>
+
+          <button class="submit-button" id="saveDayBtn">Сохранить день</button>
+
+          <div class="full-day-view">
+            <div class="full-day-meals" id="fullDayMeals"></div>
+            <div class="total-calories">Всего калорий: <span id="totalCalories">0</span></div>
           </div>
         </div>
       </div>
-
       <!-- Вкладка Задания -->
       <div class="tab-content tasks-tab">
         <div class="profile-container">
@@ -160,7 +228,6 @@
       </div>
     </div>
 
-    <!-- Нижнее меню (только для профиля) -->
     <!-- Нижнее меню (только для профиля) -->
     <div class="bottom-menu hidden" id="bottomMenu">
       <div class="menu-group profile-active" id="menuGroup">
@@ -178,7 +245,7 @@
         </button>
       </div>
     </div>
+    <script src="food-database.js"></script>
     <script src="app.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
   </body>
 </html>

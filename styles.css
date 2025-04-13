@@ -443,3 +443,604 @@ body {
 #resultContainer span {
   font-weight: bold;
 }
+
+/* Стили для вкладки Калории */
+.calories-header {
+  margin-bottom: 20px;
+}
+
+.date-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.month-year-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.month-select,
+.year-select {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+.days-slider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.days-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  justify-content: center;
+  gap: 10px;
+}
+
+.day-item {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.day-item.active {
+  background-color: #000;
+  color: white;
+}
+
+.slider-arrow {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.meal-section {
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.meal-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.add-meal-btn {
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meal-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.meal-input-container input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+}
+
+.save-meal-btn {
+  padding: 8px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.meal-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.meal-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-item-name {
+  font-weight: 500;
+}
+
+.meal-item-calories {
+  font-size: 12px;
+  color: #666;
+}
+
+.delete-meal-btn {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.toggle-day-view {
+  margin-top: 20px;
+}
+
+.toggle-day-view button {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.full-day-view {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+}
+
+.full-day-view h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.full-day-meals {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.total-calories {
+  margin-top: 10px;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Стили для модального окна поиска продуктов */
+.food-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.food-modal-content {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.food-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.food-modal-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.close-food-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.food-search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.food-search-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.food-search-button {
+  padding: 10px 15px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.food-search-results {
+  margin-top: 10px;
+}
+
+.food-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.food-item:hover {
+  background-color: #f5f5f5;
+}
+
+.food-item-name {
+  font-weight: 500;
+}
+
+.food-item-details {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #666;
+}
+
+.food-item-calories {
+  font-weight: 500;
+  color: #333;
+}
+
+.food-item-macros {
+  font-size: 11px;
+}
+
+.select-food-button {
+  padding: 5px 10px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Обновленные стили для отображения БЖУ в приемах пищи */
+.meal-item-details {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.meal-item-macros {
+  font-size: 12px;
+}
+
+/* Стили для модального окна продукта */
+/* Обновленные стили для модального окна продукта */
+.product-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.product-modal-content {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.product-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.product-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.close-product-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.product-macros {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.product-macros div {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.product-macros span {
+  font-weight: 600;
+  color: #000;
+}
+
+.product-macros small {
+  color: #666;
+  font-size: 12px;
+  display: block;
+  margin-top: 10px;
+}
+
+.product-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.product-calculator label {
+  font-size: 14px;
+  color: #555;
+}
+
+.weight-input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#calculateProduct {
+  padding: 12px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+#calculateProduct:hover {
+  background-color: #e0e0e0;
+}
+
+#addProductToMeal {
+  width: 100%;
+  padding: 15px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+#addProductToMeal:hover {
+  background-color: #333;
+}
+
+/* Добавьте это в конец файла styles.css */
+
+/* Стили для круговой шкалы калорий */
+.calories-progress {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
+}
+
+.calories-progress-circle {
+  width: 100%;
+  height: 100%;
+}
+
+.calories-progress-circle-bg {
+  fill: none;
+  stroke: #f0f0f0;
+  stroke-width: 10;
+}
+
+.calories-progress-circle-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: all 0.3s ease;
+}
+
+.calories-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.calories-progress-text small {
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  color: #666;
+}
+
+/* Стили для элементов еды в поиске */
+.food-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.food-item-calories {
+  font-weight: 500;
+  color: #333;
+}
+
+.food-item-macros {
+  display: flex;
+  gap: 8px;
+}
+
+.food-item-macros span {
+  display: flex;
+  align-items: center;
+}
+
+/* Убираем нижний подсчет калорий */
+.full-day-view .total-calories {
+  display: none;
+}
+
+/* Удаление кнопки "Открыть весь день" */
+.toggle-day-view {
+  display: none;
+}
+
+.meal-item-details {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.meal-item-calories {
+  font-weight: 500;
+  color: #333;
+}
+
+.meal-item-macros {
+  color: #666;
+}
+
+/* Убираем дублирование еды под кнопкой "Сохранить день" */
+.full-day-view {
+  display: none !important;
+}
+
+/* Стили для круговой шкалы калорий */
+.calories-progress {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
+}
+
+.calories-progress-circle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.calories-progress-circle-bg {
+  fill: none;
+  stroke: #f0f0f0;
+  stroke-width: 10;
+}
+
+.calories-progress-circle-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 283; /* 2πr ≈ 283 (2 * 3.1415 * 45) */
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.5s ease-in-out;
+  stroke: #000; /* Добавляем начальный цвет */
+}
+
+.calories-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.calories-progress-text small {
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  color: #666;
+}
