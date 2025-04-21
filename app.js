@@ -1074,7 +1074,7 @@ function initTasksTab() {
       </div>
       <div class="progress-container">
         <div class="progress-bar">
-          <div class="progress-bar-fill" style="width: 0%">0/465</div>
+          <div class="progress-bar-fill" style="width: 0%">0</div>
         </div>
         <div class="progress-text">Максимально можно получить 465 баллов в этом месяце</div>
       </div>
