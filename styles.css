@@ -1044,3 +1044,61 @@ body {
   font-weight: normal;
   color: #666;
 }
+
+/* Стили для вкладки Задания */
+.tasks-content {
+  padding: 20px;
+}
+
+.task-description {
+  margin-bottom: 20px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.progress-container {
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #34c759;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.current-streak {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.current-streak h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.current-streak p {
+  color: #666;
+  font-size: 16px;
+}

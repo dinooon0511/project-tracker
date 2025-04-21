@@ -61,6 +61,10 @@ const fullDayView = document.querySelector('.full-day-view');
 const fullDayMeals = document.getElementById('fullDayMeals');
 const totalCaloriesSpan = document.getElementById('totalCalories');
 
+let tasksData = {};
+let currentStreak = 0;
+let totalPoints = 0;
+
 let currentDate = new Date();
 let selectedDate = new Date();
 let mealsData = {};
@@ -216,10 +220,11 @@ caloriesTabBtn.addEventListener('click', function () {
   setActiveTab('calories');
 });
 
-tasksTabBtn.addEventListener('click', function () {
+tasksTabBtn.addEventListener('click', () => {
   menuGroup.classList.remove('profile-active', 'settings-active', 'calories-active');
   menuGroup.classList.add('tasks-active');
   setActiveTab('tasks');
+  initTasksTab();
 });
 
 // Обработчики для кнопок выбора пола
@@ -362,6 +367,8 @@ function showProfile(username) {
   profileContainer.classList.remove('hidden');
   bottomMenu.classList.remove('hidden');
   setActiveTab('profile');
+  loadTasksData();
+  updatePointsDisplay();
   localStorage.setItem('currentUser', username);
 }
 
@@ -689,6 +696,10 @@ window.addEventListener('DOMContentLoaded', function () {
     showProfile(currentUser);
     initCaloriesTab();
   }
+  // Проверяем смену дня
+  checkDayChange();
+  // Устанавливаем интервал для проверки смены дня (каждые 10 минут)
+  setInterval(checkDayChange, 600000);
 
   // Инициализируем вкладку Калории при переключении на нее
   caloriesTabBtn.addEventListener('click', initCaloriesTab);
@@ -970,5 +981,155 @@ function updateCaloriesProgress() {
 // В функции saveDayBtn.addEventListener добавьте вызов обновления шкалы:
 saveDayBtn.addEventListener('click', () => {
   saveMealsData();
-  alert('Данные за день сохранены!');
+  const dateKey = formatDateKey(selectedDate);
+  let dayCalories = 0;
+
+  if (mealsData[dateKey]) {
+    ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
+      if (mealsData[dateKey][mealType]) {
+        mealsData[dateKey][mealType].forEach((meal) => {
+          dayCalories += parseFloat(meal.calories) || 0;
+        });
+      }
+    });
+  }
+  const currentUser = localStorage.getItem('currentUser');
+  let maxCalories = 2000;
+
+  if (currentUser) {
+    const user = usersDB.find((user) => user.login === currentUser);
+    if (user && user.calories) {
+      maxCalories = parseInt(user.calories) || 2000;
+    }
+  }
+  if (dayCalories >= maxCalories) {
+    currentStreak++;
+    const today = new Date();
+    const dayOfMonth = today.getDate();
+    const pointsToAdd = Math.min(currentStreak, dayOfMonth);
+
+    totalPoints += pointsToAdd;
+    if (totalPoints > 465) totalPoints = 465;
+
+    saveTasksData();
+    updatePointsDisplay();
+
+    alert(`Данные за день сохранены! Вы получили ${pointsToAdd} баллов.`);
+  } else {
+    currentStreak = 0;
+    saveTasksData();
+    alert('Данные за день сохранены! Норма калорий не выполнена.');
+  }
 });
+
+function loadTasksData() {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const user = usersDB.find((user) => user.login === currentUser);
+    if (user && user.tasksData) {
+      tasksData = user.tasksData;
+      currentStreak = tasksData.currentStreak || 0;
+      totalPoints = tasksData.totalPoints || 0;
+    }
+  }
+}
+
+function saveTasksData() {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    const userIndex = usersDB.findIndex((user) => user.login === currentUser);
+    if (userIndex !== -1) {
+      tasksData.currentStreak = currentStreak;
+      tasksData.totalPoints = totalPoints;
+      usersDB[userIndex].tasksData = tasksData;
+      usersDB[userIndex].points = totalPoints;
+      localStorage.setItem('fitnessUsers', JSON.stringify(usersDB));
+    }
+  }
+}
+
+function updatePointsDisplay() {
+  userPoints.textContent = totalPoints;
+  updateProgressBar();
+}
+
+function updateProgressBar() {
+  const progressBar = document.querySelector('.progress-bar-fill');
+  if (progressBar) {
+    const progress = (totalPoints / 465) * 100;
+    progressBar.style.width = `${Math.min(progress, 100)}%`;
+    progressBar.textContent = `${totalPoints}/465`;
+  }
+}
+
+function initTasksTab() {
+  const tasksContainer = document.querySelector('.tasks-tab .profile-container');
+  tasksContainer.innerHTML = `
+    <div class="profile-header">Задания</div>
+    <div class="tasks-content">
+      <div class="task-description">
+        <p>Выполняйте норму калорий каждый день, чтобы получать баллы!</p>
+        <p>Каждый день увеличивает количество баллов за выполнение нормы.</p>
+        <p>Если пропустите день - счётчик начнётся заново.</p>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-bar-fill" style="width: 0%">0/465</div>
+        </div>
+        <div class="progress-text">Максимально можно получить 465 баллов в этом месяце</div>
+      </div>
+      <div class="current-streak">
+        <h3>Текущая серия: <span id="currentStreak">${currentStreak}</span> дней</h3>
+        <p>Следующий день принесёт вам ${currentStreak + 1} баллов</p>
+      </div>
+    </div>
+  `;
+
+  updateProgressBar();
+}
+
+function checkDayChange() {
+  const lastCheck = localStorage.getItem('lastDayCheck');
+  const now = new Date();
+  const today = now.toDateString();
+
+  if (!lastCheck || lastCheck !== today) {
+    // День изменился
+    localStorage.setItem('lastDayCheck', today);
+
+    // Если сейчас полночь (или около того), сбрасываем currentStreak если не выполнена норма
+    const hours = now.getHours();
+    if (hours >= 0 && hours < 6) {
+      // Проверяем с 00:00 до 06:00
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayKey = formatDateKey(yesterday);
+
+      let yesterdayCalories = 0;
+      if (mealsData[yesterdayKey]) {
+        ['breakfast', 'lunch', 'dinner', 'snack'].forEach((mealType) => {
+          if (mealsData[yesterdayKey][mealType]) {
+            mealsData[yesterdayKey][mealType].forEach((meal) => {
+              yesterdayCalories += parseFloat(meal.calories) || 0;
+            });
+          }
+        });
+      }
+
+      const currentUser = localStorage.getItem('currentUser');
+      let maxCalories = 2000;
+
+      if (currentUser) {
+        const user = usersDB.find((user) => user.login === currentUser);
+        if (user && user.calories) {
+          maxCalories = parseInt(user.calories) || 2000;
+        }
+      }
+
+      if (yesterdayCalories < maxCalories) {
+        currentStreak = 0;
+        saveTasksData();
+      }
+    }
+  }
+}
