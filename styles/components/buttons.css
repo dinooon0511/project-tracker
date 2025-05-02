@@ -1,0 +1,33 @@
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #363636;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #363636;
+}

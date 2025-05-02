@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Профиль</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4fdfd;
+        margin: 0;
+        padding: 0;
+      }
+      .header {
+        background: white;
+        padding: 1em;
+        font-size: 1.5em;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .profile {
+        background: white;
+        margin: 1em;
+        padding: 1em;
+        border-radius: 10px;
+      }
+      .profile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .profile-info {
+        font-size: 1em;
+      }
+      .progress,
+      .goals {
+        background: white;
+        margin: 1em;
+        padding: 1em;
+        border-radius: 10px;
+      }
+      .bar-container {
+        background: #eee;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 0.5em;
+      }
+      .bar-fill {
+        background: #5ec2e0;
+        width: 0%;
+        height: 10px;
+      }
+      .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        display: flex;
+        justify-content: space-around;
+        padding: 0.5em 0;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .footer button {
+        background: none;
+        border: none;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">Профиль</div>
+
+    <div class="profile">
+      <div class="profile-header">
+        <div>
+          <strong>Дмитрий Плескунин</strong><br />
+          23 года · Набрать вес · Пескетарианство
+        </div>
+        <div class="profile-info">
+          ккал: <strong>2672</strong><br />
+          шаги: <strong>0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress">
+      <strong>Вы набрали 0,0 кг!</strong><br />
+      всего лишь 16 недель до достижения цели
+      <div class="bar-container">
+        <div class="bar-fill" style="width: 0%"></div>
+      </div>
+      <small>65.0 кг — 73.0 кг</small>
+    </div>
+
+    <div class="goals">
+      <strong>Мои цели</strong>
+      <ul>
+        <li>Питание: По умолчанию</li>
+        <li>Цель: Набрать вес</li>
+        <li>Вес: 73,0 кг</li>
+        <li>Калории: 2 699 ккал</li>
+        <li>Шаги: 10 000</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <button>Дневник</button>
+      <button>Голодание</button>
+      <button>Рецепты</button>
+      <button style="color: #00bfff"><strong>Профиль</strong></button>
+      <button>PRO</button>
+    </div>
+  </body>
+</html>

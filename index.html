@@ -4,7 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Фитнес Трекер</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/auth.css" />
+    <link rel="stylesheet" href="styles/profile.css" />
+    <link rel="stylesheet" href="styles/settings.css" />
+    <link rel="stylesheet" href="styles/calendar.css" />
+    <link rel="stylesheet" href="styles/tasks.css" />
+    <link rel="stylesheet" href="styles/modals.css" />
+    <link rel="stylesheet" href="styles/components/buttons.css" />
+    <link rel="stylesheet" href="styles/components/forms.css" />
   </head>
   <body>
     <!-- Контейнер для авторизации/регистрации -->
@@ -52,214 +60,42 @@
 
     <!-- Контейнер для профиля (изначально скрыт) -->
     <div class="container hidden" id="profileContainer">
-      <!-- Вкладка Профиль -->
-      <div class="tab-content profile-tab active">
-        <div class="profile-container">
-          <div class="profile-header">Ваш профиль</div>
-
-          <div class="user-profile">
-            <div class="avatar-container">
-              <div class="avatar" id="avatarWrapper">
-                <img
-                  id="userAvatar"
-                  class="default-avatar"
-                  src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"
-                  alt="Аватар"
-                />
-              </div>
-              <label class="avatar-upload">
-                <input type="file" id="avatarInput" accept="image/*" />
-                <span>+</span>
-              </label>
-            </div>
-            <div class="user-info">
-              <div class="username" id="profileUsername">Пользователь</div>
-              <div class="points">Баллы: <span id="userPoints">0</span></div>
-            </div>
-          </div>
-
-          <div class="stats-container">
-            <div class="stats-row">
-              <div class="stat-item">
-                <div class="stat-value" id="userHeight">175</div>
-                <div class="stat-label">Рост (см)</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value" id="userWeight">70</div>
-                <div class="stat-label">Вес (кг)</div>
-              </div>
-            </div>
-            <div class="stats-row">
-              <div class="stat-item">
-                <div class="stat-value" id="userCalories">2000</div>
-                <div class="stat-label">Калории (ккал)</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value" id="userActivity">3</div>
-                <div class="stat-label">Активность</div>
-              </div>
-            </div>
-          </div>
-
-          <button class="logout-btn" id="logoutBtn">Выйти</button>
-        </div>
-      </div>
-
-      <!-- Вкладка Параметры -->
-      <div class="tab-content settings-tab">
-        <div class="profile-container">
-          <div class="profile-header">Мои параметры</div>
-
-          <div class="gender-button-group">
-            <button class="gender-button" id="maleBtn">Мужчина</button>
-            <button class="gender-button" id="femaleBtn">Женщина</button>
-          </div>
-
-          <!-- Остальные элементы остаются без изменений -->
-          <div class="input-group">
-            <label for="ageInput">Возраст</label>
-            <input type="number" id="ageInput" placeholder="Введите ваш возраст" />
-          </div>
-
-          <div class="input-group">
-            <label for="heightInput">Рост (см)</label>
-            <input type="number" id="heightInput" placeholder="Введите ваш рост" />
-          </div>
-
-          <div class="input-group">
-            <label for="weightInput">Вес (кг)</label>
-            <input type="number" id="weightInput" placeholder="Введите ваш вес" />
-          </div>
-
-          <button class="submit-button" id="calculateBtn">Рассчитать калории</button>
-
-          <div id="resultContainer" class="hidden">
-            <p>Ваша дневная норма калорий: <span id="calculatedCalories">0</span> ккал</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Вкладка Калории -->
-      <div class="tab-content calories-tab">
-        <div class="profile-container">
-          <div class="calories-header">
-            <div class="date-picker">
-              <div class="month-year-selector">
-                <select id="monthSelect" class="month-select">
-                  <option value="0">Январь</option>
-                  <option value="1">Февраль</option>
-                  <option value="2">Март</option>
-                  <option value="3">Апрель</option>
-                  <option value="4">Май</option>
-                  <option value="5">Июнь</option>
-                  <option value="6">Июль</option>
-                  <option value="7">Август</option>
-                  <option value="8">Сентябрь</option>
-                  <option value="9">Октябрь</option>
-                  <option value="10">Ноябрь</option>
-                  <option value="11">Декабрь</option>
-                </select>
-                <select id="yearSelect" class="year-select"></select>
-              </div>
-            </div>
-            <div class="days-slider">
-              <button class="slider-arrow prev-day">&lt;</button>
-              <div class="days-container" id="daysContainer"></div>
-              <button class="slider-arrow next-day">&gt;</button>
-            </div>
-          </div>
-
-          <div class="calories-progress">
-            <svg class="calories-progress-circle" viewBox="0 0 100 100">
-              <circle class="calories-progress-circle-bg" cx="50" cy="50" r="45" />
-              <circle class="calories-progress-circle-fill" cx="50" cy="50" r="45" />
-            </svg>
-            <div class="calories-progress-text">0<small>из 0</small></div>
-          </div>
-
-          <div class="meal-section">
-            <div class="meal-header">
-              <h3>Завтрак</h3>
-              <button class="add-meal-btn" data-meal="breakfast">+</button>
-            </div>
-            <div class="meal-items" data-meal="breakfast"></div>
-          </div>
-
-          <div class="meal-section">
-            <div class="meal-header">
-              <h3>Обед</h3>
-              <button class="add-meal-btn" data-meal="lunch">+</button>
-            </div>
-            <div class="meal-items" data-meal="lunch"></div>
-          </div>
-
-          <div class="meal-section">
-            <div class="meal-header">
-              <h3>Ужин</h3>
-              <button class="add-meal-btn" data-meal="dinner">+</button>
-            </div>
-            <div class="meal-items" data-meal="dinner"></div>
-          </div>
-
-          <div class="meal-section">
-            <div class="meal-header">
-              <h3>Перекус</h3>
-              <button class="add-meal-btn" data-meal="snack">+</button>
-            </div>
-            <div class="meal-items" data-meal="snack"></div>
-          </div>
-
-          <button class="submit-button" id="saveDayBtn">Сохранить день</button>
-
-          <div class="full-day-view">
-            <div class="full-day-meals" id="fullDayMeals"></div>
-            <div class="total-calories">Всего калорий: <span id="totalCalories">0</span></div>
-          </div>
-        </div>
-      </div>
-      <!-- Вкладка Задания -->
-      <div class="tab-content tasks-tab">
-        <div class="profile-container">
-          <div class="profile-header">Задания</div>
-          <div class="tasks-content">
-            <div class="task-description">
-              <p>Выполняйте норму калорий каждый день, чтобы получать баллы!</p>
-              <p>Каждый день увеличивает количество баллов за выполнение нормы.</p>
-              <p>Если пропустите день - счётчик начнётся заново.</p>
-            </div>
-            <div class="progress-container">
-              <div class="progress-bar">
-                <div class="progress-bar-fill">0</div>
-              </div>
-              <div class="progress-text">Максимально можно получить 465 баллов в этом месяце</div>
-            </div>
-            <div class="current-streak">
-              <h3>Текущая серия: <span id="currentStreak">0</span> дней</h3>
-              <p>Следующий день принесёт вам <span id="nextDayPoints">1</span> баллов</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Вкладки будут заполняться динамически через JavaScript -->
     </div>
 
     <!-- Нижнее меню (только для профиля) -->
     <div class="bottom-menu hidden" id="bottomMenu">
       <div class="menu-group profile-active" id="menuGroup">
         <button class="menu-button active" id="profileTabBtn">
-          <img src="pro.svg" alt="Профиль" class="menu-icon" />
+          <img src="./Img/pro.svg" alt="Профиль" class="menu-icon" />
         </button>
         <button class="menu-button" id="settingsTabBtn">
-          <img src="par.svg" alt="Параметры" class="menu-icon" />
+          <img src="./Img/par.svg" alt="Параметры" class="menu-icon" />
         </button>
         <button class="menu-button" id="caloriesTabBtn">
-          <img src="cal.svg" alt="Калории" class="menu-icon" />
+          <img src="./Img/cal.svg" alt="Калории" class="menu-icon" />
         </button>
         <button class="menu-button" id="tasksTabBtn">
-          <img src="win.svg" alt="Задания" class="menu-icon" />
+          <img src="./Img/win.svg" alt="Задания" class="menu-icon" />
         </button>
       </div>
     </div>
+
     <script src="food-database.js"></script>
-    <script src="app.js"></script>
+    <script src="modules/shared.js"></script>
+    <script src="modules/auth.js"></script>
+    <script src="modules/profile.js"></script>
+    <script src="modules/settings.js"></script>
+    <script src="modules/calendar.js"></script>
+    <script src="modules/tasks.js"></script>
+    <script>
+      // Инициализация при загрузке страницы
+      document.addEventListener('DOMContentLoaded', function () {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+          showProfile(currentUser);
+        }
+      });
+    </script>
   </body>
 </html>
