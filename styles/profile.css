@@ -78,10 +78,69 @@
 }
 
 .stats-container {
-  background-color: #f9f9f9;
+  background-color: #fff;
   border-radius: 20px;
   padding: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-section {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.progress-time {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.progress-bar-simple {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 5px 0;
+}
+
+.progress-fill-simple {
+  height: 100%;
+  width: 0;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-difference {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 5px;
 }
 
 .stats-row {
@@ -203,7 +262,6 @@
   display: block;
 }
 
-/* Дополнительные строки в профиле (цель, дата рождения и т.д.) */
 .stats-row {
   display: flex;
   justify-content: space-between;
@@ -225,4 +283,177 @@
 .stat-label {
   font-size: 14px;
   color: #666;
+}
+
+.progress-container {
+  margin-top: 25px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.progress-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.progress-time {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-bar-container {
+  margin-top: 10px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.progress-difference {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 0;
+  color: #999;
+}
+
+.edit-icon {
+  font-size: 14px;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Модальное окно */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.modal-save-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Блок истории веса */
+.history-container {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-header {
+  margin-bottom: 15px;
+}
+
+.history-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.history-chart {
+  width: 100%;
+  height: 200px;
+  margin: 10px 0;
+}
+
+.add-weight-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.add-weight-btn:hover {
+  background-color: #e0e0e0;
 }

@@ -1,34 +1,59 @@
+/* Основные стили */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    sans-serif;
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Контейнеры */
+.auth-container {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Группа кнопок */
 .button-group {
-  border: 0px solid black;
+  border: 0 solid black;
   padding: 7px;
   background-color: #fff;
   border-radius: 30px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin: 0 auto 30px;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
 .button-group::after {
   content: '';
   position: absolute;
-  margin: 0px 5px;
+  margin: 0 5px;
   top: 4px;
   left: 0;
   height: 47px;
   background-color: #000000;
   border-radius: 30px;
   transition: all 0.3s ease;
+  width: 48.5%;
 }
 
 .button-group.login-active::after {
-  width: 50%;
   transform: translateX(0);
 }
 
 .button-group.register-active::after {
-  width: 48.5%;
   transform: translateX(100%);
 }
 
@@ -47,110 +72,164 @@
   z-index: 1;
 }
 
-.button:first-child {
-  margin-right: 10px;
-}
-
-.button-login {
-  color: #000;
-}
-
-.button-login.active {
+.button.active {
   color: #ffffff;
   font-weight: 600;
 }
 
-.button-register {
-  color: #000;
-}
-
-.button-register.active {
-  color: #ffffff;
-  font-weight: 600;
-}
-
+/* Формы */
 .form-container {
   background-color: #fff;
   border-radius: 30px;
-  padding: 20px;
+  padding: 25px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-/* === Регистрация: модальное окно и прогресс === */
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
 
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #000;
+  outline: none;
+}
+
+/* Модальное окно теста */
 .registration-test-modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: #fff;
   z-index: 1000;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .test-container {
   width: 100%;
   max-width: 400px;
-  background-color: #fff;
-  border-radius: 30px;
-  padding: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  padding: 20px;
+}
+
+.progress-container2 {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 25px;
 }
 
 .progress-bar {
-  height: 10px;
+  height: 8px;
   background: #eee;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 25px;
+  width: 100%;
 }
 
 .progress-fill {
   height: 100%;
   background: #000;
-  transition: width 0.3s ease;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .question {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 20px;
+  line-height: 1.4;
+  word-break: break-word;
+  padding: 0 10px;
 }
 
-.answer {
+.answer-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  width: 100%;
+  padding: 0 10px;
 }
 
 .option-btn {
-  padding: 12px;
+  padding: 15px;
   font-size: 16px;
   border-radius: 20px;
   background-color: #f0f0f0;
   border: none;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
 }
 
 .option-btn:hover {
   background-color: #e0e0e0;
 }
 
+.option-btn i {
+  font-size: 20px;
+}
+
 .answer-input {
-  padding: 12px;
+  padding: 15px;
   font-size: 16px;
   border-radius: 20px;
   border: 1px solid #ccc;
+  width: 100%;
 }
 
+.input-error {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+}
+
+.next-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 15px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Экран загрузки */
 .loading-container {
   text-align: center;
+  width: 100%;
+  padding: 0 20px;
 }
 
 .progress-circle {
@@ -170,9 +249,107 @@
   padding: 0;
   font-size: 16px;
   color: #aaa;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .loading-steps li {
-  margin: 5px 0;
+  margin: 10px 0;
   transition: color 0.3s ease;
+}
+
+/* Иконки */
+.icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.icon-weight-loss {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M12,4C14.21,4 16,5.79 16,8C16,10.21 14.21,12 12,12C9.79,12 8,10.21 8,8C8,5.79 9.79,4 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z' /%3E%3C/svg%3E");
+}
+
+.icon-weight-maintain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M12,3C14.21,3 16,4.79 16,7C16,9.21 14.21,11 12,11C9.79,11 8,9.21 8,7C8,4.79 9.79,3 12,3M12,13C16.42,13 20,14.79 20,18V20H4V18C4,14.79 7.58,13 12,13Z' /%3E%3C/svg%3E");
+}
+
+.icon-weight-gain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4M12,14C7.58,14 4,15.79 4,18V20H20V18C20,15.79 16.42,14 12,14Z' /%3E%3C/svg%3E");
+}
+
+.icon-muscle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,3.18L19,6.3V11.22C19,12.92 18.5,14.65 17.65,16.17C16,14.94 13.26,14.5 12,14.5C10.74,14.5 8,14.94 6.35,16.17C5.5,14.65 5,12.92 5,11.22V6.3L12,3.18M11,7V11H13V7H11M11,13V15H13V13H11Z' /%3E%3C/svg%3E");
+}
+
+.icon-female {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M12,4A6,6 0 0,1 18,10C18,12.97 15.84,15.44 13,15.92V18H15V20H13V22H11V20H9V18H11V15.92C8.16,15.44 6,12.97 6,10A6,6 0 0,1 12,4M12,6A4,4 0 0,0 8,10A4,4 0 0,0 12,14A4,4 0 0,0 16,10A4,4 0 0,0 12,6Z' /%3E%3C/svg%3E");
+}
+
+.icon-male {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M9,9C10.29,9 11.5,9.41 12.47,10.11L17.58,5H13V3H21V11H19V6.41L13.89,11.5C14.59,12.5 15,13.7 15,15A6,6 0 0,1 9,21A6,6 0 0,1 3,15A6,6 0 0,1 9,9M9,11A4,4 0 0,0 5,15A4,4 0 0,0 9,19A4,4 0 0,0 13,15A4,4 0 0,0 9,11Z' /%3E%3C/svg%3E");
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  .auth-container {
+    padding: 0;
+  }
+
+  .button-group {
+    padding: 5px;
+  }
+
+  .button-group::after {
+    height: 42px;
+  }
+
+  .button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .form-container {
+    padding: 20px 15px;
+    border-radius: 20px;
+  }
+
+  .question {
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding: 0 5px;
+  }
+
+  .option-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .answer-input {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .progress-container {
+    margin-bottom: 20px;
+  }
+
+  .next-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .loading-container {
+    padding: 0 15px;
+  }
+
+  .loading-steps {
+    font-size: 14px;
+  }
 }
